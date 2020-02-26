@@ -7,7 +7,7 @@ int main(void)
     int pass = 0;
     printf("Enter password: \n");
     gets(buff);
-    if(strcmp(buff, "hanismf"))
+    if(!strcmp(buff, "hanism"))
     {
         printf ("Acces granted! \n");
 	pass = 1;

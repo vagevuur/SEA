@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+#define MAX 15
 
 int main(void)
 {
     char buff[15];
     int pass = 0;
     printf("Enter password: \n");
-    gets(buff);
+    fgets(buff, MAX, stdin);
     int sum = 0;
     for (int i=0; i < strlen(buff); i++){
 	sum += (int)buff[i];
     }
-    if(sum == 640) {
+    printf("Value is: %d\n", sum);
+    if(sum == 650) {
         printf ("Acces granted! \n");
 	pass = 1;
     } else {

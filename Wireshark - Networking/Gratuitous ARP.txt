@@ -1,0 +1,22 @@
+Definitie: - Gratuitous ARP: Een ARP-pakket dat een host uitzendt waarin het zijn eigen IP-adres koppelt 
+aan zijn MAC-adres, zonder dat er eerst om gevraagd is.
+
+Doel / Gebruik
+Aankondiging: Update ARP-caches van andere hosts na IP-toewijzing of MAC-wijzigingen
+
+Conflictdetectie:
+Controleren of een ander apparaat hetzelfde IP-adres gebruikt (IP conflict)
+
+Failover:
+Gebruikt door HA-protocollen (VRRP/Keepalived) om snel rutes/ARP's te herstellen bij failover
+
+Kali Linux:
+arping -A -I eth0 192.168.178.1
+
+Beperkingen, veiligheid:
+* Kan misbruikt worden voor ARP spoofing/poisening
+* Mitigatie: statische ARP waar mogelijk, Dynamische ARP inspection (switches), port security, monitoring
+
+
+Wireshark:
+Displayfilter om een Gratuitous ARP te vinden is: arp && arp.src.proto_ipv4 == arp.dst.proto_ipv4

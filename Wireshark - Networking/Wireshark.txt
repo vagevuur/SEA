@@ -1,0 +1,7 @@
+SYN-ECE-CWR are set:
+
+When TCP flags SYN, ECE, and CWR are all set on a packet, it's part of the Explicit Congestion Notification 
+(ECN) process,  signaling a connection is initiating (SYN) and both endpoints are ECN-capable, with CWR indicating 
+the sender  has reduced its congestion window in response to prior ECN signals, or to negotiate ECN setup, 
+showing active  congestion management during handshake. ECE (ECN-Echo) flags that congestion was detected in the 
+network, while CWR (Congestion Window Reduced) confirms the sender's acknowledgment and rate reduction
